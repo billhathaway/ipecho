@@ -14,4 +14,6 @@ To change the listen address or port, use
 Example:
 ./ipecho -host 127.0.0.1 -port 8888
 
-No logs are emitted except in the case that it is not able to bind to a port, in which case an error is printed to stderr.
+
+Simple logging is now enabled by default, to disable it use
+-quiet

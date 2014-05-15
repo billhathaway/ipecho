@@ -4,7 +4,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
 	"net"
 	"net/http"
 	"os"
@@ -16,14 +15,19 @@ const (
 	defaultHost = "0.0.0.0"
 )
 
+var (
+	quiet = false
+)
+
 func render(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path == "/" {
-		w.Header().Set("Content-Type", "text/plain")
-		address, _, _ := net.SplitHostPort(r.RemoteAddr)
-		io.WriteString(w, address+"\n")
-	} else {
-		w.WriteHeader(http.StatusNotFound)
+
+	w.Header().Set("Content-Type", "text/plain")
+	address, _, _ := net.SplitHostPort(r.RemoteAddr)
+	fmt.Fprintln(w, address)
+	if !quiet {
+		fmt.Printf("%s ip=%s request=%s\n", time.Now().Format(time.RFC3339), address, r.URL.Path)
 	}
+
 }
 
 func main() {
@@ -33,6 +37,7 @@ func main() {
 
 	flag.StringVar(&listenPort, "port", defaultPort, "TCP port to listen on")
 	flag.StringVar(&listenHost, "host", defaultHost, "TCP address to listen on")
+	flag.BoolVar(&quiet, "quiet", quiet, "disable request logging")
 	flag.BoolVar(&help, "help", false, "show usage message")
 	flag.Parse()
 
